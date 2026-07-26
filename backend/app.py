@@ -20,7 +20,8 @@ headers = {
 def home():
     return jsonify({
         "status": "running",
-        "project": "CaptionLens"
+        "project": "CaptionLens",
+        "version": "TEST-12345"
     })
 
 
