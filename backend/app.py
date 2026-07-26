@@ -1,75 +1,99 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+# from flask import Flask, request, jsonify
+# from flask_cors import CORS
+# import requests
+# import os
+
+# app = Flask(__name__)
+# CORS(app)
+
+# # Your Hugging Face Token
+# HF_TOKEN = os.environ.get("HF_TOKEN")
+
+# API_URL = "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base"
+
+# headers = {
+#     "Authorization": f"Bearer {HF_TOKEN}"
+# }
+
+
+# @app.route("/")
+# def home():
+#     return jsonify({
+#         "status": "running",
+#         "project": "CaptionLens",
+#         "version": "TEST-12345"
+#     })
+
+
+# @app.route("/caption", methods=["POST"])
+# def caption():
+
+#     if "image" not in request.files:
+#         return jsonify({"error": "No image uploaded"}), 400
+
+#     image = request.files["image"]
+
+#     try:
+
+#         image_bytes = image.read()
+
+#         response = requests.post(
+#             API_URL,
+#             headers=headers,
+#             data=image_bytes,
+#             timeout=120
+#         )
+
+#         if response.status_code != 200:
+#             return jsonify({
+#                 "error": response.text
+#             }), response.status_code
+
+#         result = response.json()
+
+#         if isinstance(result, list) and len(result) > 0:
+#             caption = result[0]["generated_text"]
+
+#             return jsonify({
+#                 "caption": caption
+#             })
+
+#         return jsonify({
+#             "error": "No caption generated"
+#         }), 500
+
+#     except Exception as e:
+#         return jsonify({
+#             "error": str(e)
+#         }), 500
+
+
+# if __name__ == "__main__":
+#     app.run(
+#         host="0.0.0.0",
+#         port=int(os.environ.get("PORT", 5000))
+#     )
+
+
+
+from flask import Flask
 import requests
-import os
 
 app = Flask(__name__)
-CORS(app)
-
-# Your Hugging Face Token
-HF_TOKEN = os.environ.get("HF_TOKEN")
-
-API_URL = "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base"
-
-headers = {
-    "Authorization": f"Bearer {HF_TOKEN}"
-}
-
 
 @app.route("/")
 def home():
-    return jsonify({
-        "status": "running",
-        "project": "CaptionLens",
-        "version": "TEST-12345"
-    })
-
-
-@app.route("/caption", methods=["POST"])
-def caption():
-
-    if "image" not in request.files:
-        return jsonify({"error": "No image uploaded"}), 400
-
-    image = request.files["image"]
-
     try:
-
-        image_bytes = image.read()
-
-        response = requests.post(
-            API_URL,
-            headers=headers,
-            data=image_bytes,
-            timeout=120
-        )
-
-        if response.status_code != 200:
-            return jsonify({
-                "error": response.text
-            }), response.status_code
-
-        result = response.json()
-
-        if isinstance(result, list) and len(result) > 0:
-            caption = result[0]["generated_text"]
-
-            return jsonify({
-                "caption": caption
-            })
-
-        return jsonify({
-            "error": "No caption generated"
-        }), 500
-
+        r = requests.get("https://www.google.com", timeout=10)
+        return {
+            "status": r.status_code,
+            "success": True
+        }
     except Exception as e:
-        return jsonify({
+        return {
+            "success": False,
             "error": str(e)
-        }), 500
-
+        }
 
 if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000))
-    )
+    app.run()
