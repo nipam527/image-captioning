@@ -662,7 +662,10 @@ export default function App() {
       setCaption(cap);
       setHistory(h => [{ id: Date.now(), thumb: preview, caption: cap, ts: Date.now() }, ...h.slice(0, 19)]);
       toast("Caption generated!", "ok");
-    } catch { toast("Backend error — is the server running?", "err"); }
+    } catch (err) {
+  console.log(err.response?.data);
+  alert(JSON.stringify(err.response?.data));
+}
     setLoading(false);
   };
 
