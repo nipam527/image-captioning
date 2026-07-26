@@ -90,7 +90,7 @@ html, body {
   background: var(--accent); display: grid; place-items: center;
   flex-shrink: 0;
 }
-.brand-mark svg { width: 14px; height: 14px; color: #08090a; }
+.brand-mark svg { width: 17px; height: 17px; }
 .brand-name {
   font-family: 'Cabinet Grotesk', sans-serif;
   font-size: 14px; font-weight: 700;
@@ -473,6 +473,31 @@ const ago = ts => {
   return `${Math.floor(s / 3600)}h ago`;
 };
 
+/* ── brand logo mark ── */
+/* Aperture blades (the "vision" half) fused with a caption baseline
+   (the four short ticks beneath, the "language" half). Stroke-based
+   so it stays crisp at 16-17px inside the header chip. */
+const LogoMark = () => (
+  <svg viewBox="0 0 40 44" width="17" height="17" fill="none">
+    <g stroke="#08090a" strokeWidth="2.6" strokeLinecap="round">
+      <path d="M20 18 L20 4" />
+      <path d="M20 18 L31.3 11" />
+      <path d="M20 18 L31.3 25" />
+      <path d="M20 18 L20 32" />
+      <path d="M20 18 L8.7 25" />
+      <path d="M20 18 L8.7 11" />
+    </g>
+    <circle cx="20" cy="18" r="11" fill="none" stroke="#08090a" strokeWidth="2.6" />
+    <circle cx="20" cy="18" r="4" fill="#08090a" />
+    <g stroke="#08090a" strokeWidth="2.6" strokeLinecap="round">
+      <line x1="13" y1="40" x2="13" y2="40" />
+      <line x1="17.5" y1="40" x2="17.5" y2="40" />
+      <line x1="22.5" y1="40" x2="22.5" y2="40" />
+      <line x1="27" y1="40" x2="27" y2="40" />
+    </g>
+  </svg>
+);
+
 /* ── icons ── */
 const Ic = {
   upload: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>,
@@ -686,9 +711,9 @@ export default function App() {
             <div className="hdr">
               <div className="brand">
                 <div className="brand-mark">
-                  {Ic.img}
+                  <LogoMark />
                 </div>
-                <span className="brand-name">CaptionAI</span>
+                <span className="brand-name">CaptionLens</span>
               </div>
               <div className="hdr-actions">
                 <span className="pill">Beta</span>
