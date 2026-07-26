@@ -75,25 +75,61 @@
 #     )
 
 
-
-from flask import Flask
-import requests
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from huggingface_hub import InferenceClient
+import os
 
 app = Flask(__name__)
+CORS(app)
+
+HF_TOKEN = os.environ.get("HF_TOKEN")
+
+client = InferenceClient(
+    provider="hf-inference",
+    api_key=HF_TOKEN,
+)
+
+MODEL = "Salesforce/blip-image-captioning-base"
+
 
 @app.route("/")
 def home():
+    return jsonify({
+        "status": "running",
+        "project": "CaptionLens",
+        "version": "2.0"
+    })
+
+
+@app.route("/caption", methods=["POST"])
+def caption():
+
+    if "image" not in request.files:
+        return jsonify({"error": "No image uploaded"}), 400
+
+    image = request.files["image"]
+
     try:
-        r = requests.get("https://www.google.com", timeout=10)
-        return {
-            "status": r.status_code,
-            "success": True
-        }
+        result = client.image_to_text(
+            image=image.stream,
+            model=MODEL
+        )
+
+        if hasattr(result, "generated_text"):
+            return jsonify({
+                "caption": result.generated_text
+            })
+
+        return jsonify({
+            "error": "No caption generated"
+        }), 500
+
     except Exception as e:
-        return {
-            "success": False,
+        return jsonify({
             "error": str(e)
-        }
+        }), 500
+
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
