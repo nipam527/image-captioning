@@ -1,45 +1,74 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from transformers import BlipProcessor, BlipForConditionalGeneration
-from PIL import Image
-import torch
+import requests
 import os
+
 app = Flask(__name__)
 CORS(app)
 
-# Load BLIP model
-processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+# Your Hugging Face Token
+HF_TOKEN = os.environ.get("HF_TOKEN")
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-model.to(device)
+API_URL = "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base"
+
+headers = {
+    "Authorization": f"Bearer {HF_TOKEN}"
+}
+
+
+@app.route("/")
+def home():
+    return jsonify({
+        "status": "running",
+        "project": "CaptionLens"
+    })
 
 
 @app.route("/caption", methods=["POST"])
-def generate_caption():
+def caption():
+
     if "image" not in request.files:
         return jsonify({"error": "No image uploaded"}), 400
 
-    file = request.files["image"]
+    image = request.files["image"]
 
     try:
-        image = Image.open(file.stream).convert("RGB")
 
-        inputs = processor(image, return_tensors="pt").to(device)
+        image_bytes = image.read()
 
-        output = model.generate(**inputs)
+        response = requests.post(
+            API_URL,
+            headers=headers,
+            data=image_bytes,
+            timeout=120
+        )
 
-        caption = processor.decode(output[0], skip_special_tokens=True)
+        if response.status_code != 200:
+            return jsonify({
+                "error": response.text
+            }), response.status_code
 
-        return jsonify({"caption": caption})
+        result = response.json()
+
+        if isinstance(result, list) and len(result) > 0:
+            caption = result[0]["generated_text"]
+
+            return jsonify({
+                "caption": caption
+            })
+
+        return jsonify({
+            "error": "No caption generated"
+        }), 500
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "error": str(e)
+        }), 500
 
 
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000)),
-        debug=False
+        port=int(os.environ.get("PORT", 5000))
     )
