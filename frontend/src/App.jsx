@@ -657,7 +657,7 @@ export default function App() {
     const fd = new FormData(); fd.append("image", image);
     setLoading(true);
     try {
-      const res = await axios.post("http://127.0.0.1:5000/caption", fd);
+      const res = await axios.post("https://image-captioning-ad6s.onrender.com/caption", fd);
       const cap = res.data.caption;
       setCaption(cap);
       setHistory(h => [{ id: Date.now(), thumb: preview, caption: cap, ts: Date.now() }, ...h.slice(0, 19)]);
