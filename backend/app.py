@@ -3,7 +3,7 @@ from flask_cors import CORS
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from PIL import Image
 import torch
-
+import os
 app = Flask(__name__)
 CORS(app)
 
@@ -38,4 +38,8 @@ def generate_caption():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000)),
+        debug=False
+    )
